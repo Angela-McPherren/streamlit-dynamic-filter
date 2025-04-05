@@ -1,51 +1,42 @@
-
 import streamlit as st
 import pandas as pd
 
-# Load the cleaned configurator data (use the data you uploaded)
-data = {
-    'Application': ['Commercial/Residential', 'Commercial/Residential', 'Commercial/Residential', 'Commercial/Residential', 'Commercial/Residential'],
-    'Body Manufacturer': ['McNeilus', 'McNeilus', 'McNeilus', 'McNeilus', 'McNeilus'],
-    'Body Model': ['25 yd HD REL, 3.5 yd TG (2516)', '28 yd ZR (2848)', '28 yd ZR (2848)', '36 yd Atlantic (3629)', '40 yd Meridian'],
-    'Chassis Manufacturer': ['Peterbilt', 'Mack', 'Peterbilt', 'Mack', 'Mack'],
-    'Chassis Model': ['520', 'LR', '520', 'LR', 'MRU'],
-    'Chassis Type': ['Rear Load', 'Side Load - Full Automated', 'Side Load - Full Automated', 'Front Load', 'Front Load'],
-    'System Type': ['Canopy Mount', 'Tail Mount', 'Roof Mount', 'Tail Mount', 'Tail Mount'],
-    'Part Number 1': ['MN39-1632', 'MN39-1632', 'MN39-1632', 'MN39-1632', 'MN39-1632'],
-    'Part Number 2': ['MQ36-1764', 'MG36-1600', 'MG36-1601', 'MG36-1600', 'MG36-1600'],
-    'Part Number 3': ['MQ36-1706', 'MQ36-1606', 'MQ36-1606', 'MQ36-1606', 'MQ36-1606'],
-    'Part Number 4': ['MG36-1601', 'MN36-1614-A', 'MN36-1614-A', 'MN36-1614-A', 'MN36-1614-A'],
-    'Part Number 5': ['MQ36-1769', 'MQ36-1709', 'MQ36-1773', 'MQ36-1701', 'MQ36-1701'],
-    'System Cost': [42567.25, 40189.74, 40189.74, 41463.20, 41463.20],
-    'FET': [5378.0700, 5602.7688, 5326.7688, 5575.5840, 5575.5840],
-    'Install': [2250, 6500, 4200, 5000, 5000],
-    'Total': [50195.3200, 52292.5088, 49716.5088, 52038.7840, 52038.7840]
-}
+# Load the provided data
+df = pd.read_excel('/mnt/data/rsg dynamic filter.xlsx')
 
-df = pd.DataFrame(data)
+# Streamlit UI for dynamic filtering
+st.title("Dynamic Filter for System Configuration")
 
-# Streamlit title
-st.title("CNG Configurator")
+# Filter categories
+application = st.selectbox('Select APPLICATION', df['Application'].unique())
+body_mfg = st.selectbox('Select BODY MFG', df['BODY MFG INPUTS'].unique())
+body_model = st.selectbox('Select BODY MODEL', df['BODY MODEL INPUTS'].unique())
+chassis_manuf = st.selectbox('Select CHASSIS MANUFACTURE', df['CHASSIS MANUFACTURE INPUTS'].unique())
+chassis_model = st.selectbox('Select CHASSIS MODEL', df['CHASSIS MODEL INPUTS'].unique())
+chassis_type = st.selectbox('Select CHASSIS TYPE', df['Chassis Type'].unique())
+chassis_cab = st.selectbox('Select CHASSIS CAB', df['CHASSIS CAB'].unique())
+cng_mounting = st.selectbox('Select CNG MOUNTING', df['CNG MOUNTING INPUTS'].unique())
+system_type = st.selectbox('Select SYSTEM TYPE', df['System Type'].unique())
+system_dge = st.selectbox('Select SYSTEM DGE', df['System DGE'].unique())
 
-# Filters for the app
-application_filter = st.selectbox("Select Application", df['Application'].unique())
-body_manufacturer_filter = st.selectbox("Select Body Manufacturer", df['Body Manufacturer'].unique())
-system_type_filter = st.selectbox("Select System Type", df['System Type'].unique())
-chassis_type_filter = st.selectbox("Select Chassis Type", df['Chassis Type'].unique())
-
-# Filtering the data based on user selections
+# Apply filters to the DataFrame
 filtered_df = df[
-    (df['Application'] == application_filter) & 
-    (df['Body Manufacturer'] == body_manufacturer_filter) & 
-    (df['System Type'] == system_type_filter) & 
-    (df['Chassis Type'] == chassis_type_filter)
+    (df['Application'] == application) &
+    (df['BODY MFG INPUTS'] == body_mfg) &
+    (df['BODY MODEL INPUTS'] == body_model) &
+    (df['CHASSIS MANUFACTURE INPUTS'] == chassis_manuf) &
+    (df['CHASSIS MODEL INPUTS'] == chassis_model) &
+    (df['Chassis Type'] == chassis_type) &
+    (df['CHASSIS CAB'] == chassis_cab) &
+    (df['CNG MOUNTING INPUTS'] == cng_mounting) &
+    (df['System Type'] == system_type) &
+    (df['System DGE'] == system_dge)
 ]
 
 # Display filtered results
-if filtered_df.empty:
-    st.write("No matching results found.")
+if not filtered_df.empty:
+    st.write(filtered_df[['SYSTEM PART #', 'Additional Kits Needed 1', 'Additional Kits Needed 2', 'Additional Kits Needed 3', 
+                          'Additional Kits Needed 4', 'Additional Kits Needed 5', 'Additional Kits Needed 6', 'System Cost', 
+                          'FET', 'Install', 'Total']])
 else:
-    st.write(filtered_df[['Body Model', 'Part Number 1', 'Part Number 2', 'Part Number 3', 'Part Number 4', 'Part Number 5', 'System Cost', 'FET', 'Install', 'Total']])
-
-# To run the app:
-# Save this code in a file called app.py and run it with the command: streamlit run app.py
+    st.write("No data matches your selection.")
