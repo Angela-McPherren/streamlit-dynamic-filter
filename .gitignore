@@ -1,0 +1,16 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Virtual environment
+venv/
+.env/
+
+# Streamlit specific
+.cache/
+*.streamlit/
+
+# Excel file (if it's not intended to be pushed)
+RSG CONFIGURATOR UPLOAD.xlsx
